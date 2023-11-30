@@ -2,6 +2,7 @@ package com.example.homework13_revised
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +13,7 @@ class RegisterPageFragment :
 
     private lateinit var dataListForSecondFragment: List<DataForDetailsFragment>
     private val cardRecycleAdapter = CardRecycleAdapter()
+    private var parsedJsonData : List<ListContainer> = emptyList()
 
     private val viewModel: RegisterPageViewModel by viewModels()
 
@@ -19,7 +21,7 @@ class RegisterPageFragment :
         super.onCreate(savedInstanceState)
 
         val jsonString = loadJsonFromAssets(requireContext(), "fake_data.json")
-        val parsedJsonData = parseJson(jsonString)
+        parsedJsonData = parseJson(jsonString)
 
         viewModel.setParsedJsonData(parsedJsonData)
     }
@@ -37,6 +39,10 @@ class RegisterPageFragment :
                 }
             } ?: emptyList()
 
+            if (!isRequiredFieldsFilled()) {
+                showToast("Please fill all required fields")
+                return@setOnClickListener
+            }
             val action =
                 RegisterPageFragmentDirections.actionRegisterPageFragmentToDetailsPageFragment(
                     dataListForSecondFragment.toTypedArray()
@@ -56,5 +62,23 @@ class RegisterPageFragment :
                 cardRecycleAdapter.submitList(newData)
             }
         }
+    }
+
+    private fun isRequiredFieldsFilled(): Boolean {
+        viewModel.parsedJsonData.value?.let { listContainer ->
+            for (list in listContainer) {
+                for (field in list.fields) {
+                    if (field.required && field.enteredText.isNullOrBlank()) {
+                        return false
+                    }
+                }
+            }
+            return true
+        }
+        return false
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
