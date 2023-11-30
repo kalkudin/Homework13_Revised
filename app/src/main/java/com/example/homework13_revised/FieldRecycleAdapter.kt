@@ -1,5 +1,7 @@
 package com.example.homework13_revised
 
+import android.app.DatePickerDialog
+import android.content.Context
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -9,6 +11,7 @@ import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.homework13_revised.databinding.ChooserLayoutBinding
 import com.example.homework13_revised.databinding.InputLayoutBinding
+import java.util.Calendar
 
 class FieldRecycleAdapter(private val fieldList: List<Field>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -32,6 +35,7 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = fieldList[position]
         when (holder) {
             is InputViewHolder -> {
                 holder.bindInputField(fieldList[position])
@@ -39,6 +43,7 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
 
             is ChooserViewHolder -> {
                 holder.bindChooserField(fieldList[position])
+                holder.addClickListener(item)
             }
         }
     }
@@ -67,6 +72,20 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
                 fieldList[adapterPosition].enteredText = enteredText
             }
         }
+
+        fun addClickListener(item: Field) {
+            binding.chooserInput.setOnClickListener {
+                when (item.hint) {
+                    "Birthday" -> showDatePicker(
+                        binding.chooserInput.context, binding.chooserInput, item
+                    )
+
+                    "Gender" -> showGenderPicker(
+                        binding.chooserInput.context, binding.chooserInput, item
+                    )
+                }
+            }
+        }
     }
 
     private fun setEditTextWatcher(editText: EditText, onTextChanged: (String) -> Unit) {
@@ -79,6 +98,34 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
 
             override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    private fun showDatePicker(context: Context, editText: EditText, item: Field) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            context, { _, selectedYear, selectedMonth, selectedDay ->
+                editText.setText("$selectedYear-${selectedMonth + 1}-$selectedDay")
+                item.enteredText = editText.text.toString()
+            }, year, month, day
+        )
+        datePickerDialog.show()
+    }
+
+    private fun showGenderPicker(context: Context, editText: EditText, item: Field) {
+        val genders = arrayOf("Male", "Female", "Other")
+
+        val builder = androidx.appcompat.app.AlertDialog.Builder(context)
+        builder.setTitle("Select Gender")
+        builder.setItems(genders) { _, which ->
+            editText.setText(genders[which])
+            item.enteredText = editText.text.toString()
+        }
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun getItemViewType(position: Int): Int {
