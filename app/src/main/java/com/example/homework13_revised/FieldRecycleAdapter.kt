@@ -51,9 +51,10 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
     inner class InputViewHolder(private val binding: InputLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindInputField(field: Field) {
-            binding.textInput.hint = field.hint
-            binding.textInput.setText(field.enteredText)
-
+            binding.textInput.apply {
+                hint = field.hint
+                setText(field.enteredText)
+            }
             setEditTextWatcher(binding.textInput) { enteredText ->
                 fieldList[adapterPosition].enteredText = enteredText
             }
@@ -63,10 +64,12 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
     inner class ChooserViewHolder(private val binding: ChooserLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindChooserField(field: Field) {
-            binding.chooserInput.hint = field.hint
-            binding.chooserInput.inputType = InputType.TYPE_NULL
-            binding.chooserInput.isFocusable = false
-            binding.chooserInput.setText(field.enteredText)
+            binding.chooserInput.apply {
+                hint = field.hint
+                inputType = InputType.TYPE_NULL
+                isFocusable = false
+                setText(field.enteredText)
+            }
 
             setEditTextWatcher(binding.chooserInput) { enteredText ->
                 fieldList[adapterPosition].enteredText = enteredText
@@ -79,7 +82,6 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
                     "Birthday" -> showDatePicker(
                         binding.chooserInput.context, binding.chooserInput, item
                     )
-
                     "Gender" -> showGenderPicker(
                         binding.chooserInput.context, binding.chooserInput, item
                     )
