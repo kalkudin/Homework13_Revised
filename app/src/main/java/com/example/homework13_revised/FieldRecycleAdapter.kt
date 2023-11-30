@@ -59,8 +59,8 @@ class FieldRecycleAdapter(private val fieldList: List<Field>) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindChooserField(field: Field) {
             binding.chooserInput.hint = field.hint
-//            binding.chooserInput.inputType = InputType.TYPE_NULL
-//            binding.chooserInput.isFocusable = false
+            binding.chooserInput.inputType = InputType.TYPE_NULL
+            binding.chooserInput.isFocusable = false
             binding.chooserInput.setText(field.enteredText)
 
             setEditTextWatcher(binding.chooserInput) { enteredText ->

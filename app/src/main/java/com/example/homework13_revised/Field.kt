@@ -18,7 +18,7 @@ data class Field(
     @SerializedName("is_active")
     val isActive: Boolean,
     val icon: String,
-    var enteredText: String = ""
+    var enteredText: String
 )
 
 data class ListContainer(
